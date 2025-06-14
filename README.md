@@ -94,10 +94,6 @@ The system uses a **client-server architecture**:
 ├── vite.config.ts # Vite config
 └── README.md # Project documentation
 
-yaml
-Copy
-Edit
-
 ---
 
 ## 📦 Dependencies
@@ -117,6 +113,8 @@ Key packages:
 ---
 
 ## 🛠️ How to Run the Project
+```
+bash
 
 ### 1. Clone the Repository
 
@@ -192,10 +190,8 @@ Error Responses:
 
 Returns 400 with:
 
-json
-Copy
-Edit
 { "error": "Invalid input format." }
+```
 🛠️ Customization
 🎨 Styling: Tailwind classes can be modified in React components
 
@@ -208,15 +204,9 @@ Edit
 🤝 Contributing
 Contributions are welcome! Please create a pull request or open an issue.
 
-(Optional: Add a CONTRIBUTING.md file with guidelines.)
-
 📄 License
 This project is licensed under the MIT License.
 Feel free to use, modify, and distribute.
 
 📬 Contact
 For questions, suggestions, or improvements, feel free to reach out or open an issue.
-
-vbnet
-Copy
-Edit
