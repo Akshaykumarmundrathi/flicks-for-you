@@ -71,27 +71,49 @@ The system uses a **client-server architecture**:
 ## 📁 Project Structure
 
 .
+
 ├── public/ # Static assets
+
 ├── src/
+
 │ ├── components/ # Reusable UI components
+
 │ │ └── ui/ # Shadcn UI elements
+
 │ ├── hooks/ # Custom React hooks
+
 │ ├── lib/ # Utility functions
+
 │ ├── pages/ # Page components (e.g., Index.tsx)
+
 │ ├── python_backend/ # Flask backend
+
 │ │ ├── u-1.data # Ratings data
+
 │ │ ├── u-1.genre # Genre list
+
 │ │ ├── u-1.item # Movie details
+
 │ │ ├── u-1.user # User demographics
+
 │ │ ├── app.py # Flask app entry point
+
 │ │ └── RecommendsMovie.py# Recommendation logic
+
 │ ├── App.tsx # App wrapper
+
 │ ├── index.css # Global styles
+
 │ └── main.tsx # Entry point
+
 ├── dev.nix # Nix environment setup
+
 ├── index.html # Root HTML template
+
 ├── package.json # Frontend dependencies
+
 ├── vite.config.ts # Vite config
+
 └── README.md # Project documentation
 
 ---
