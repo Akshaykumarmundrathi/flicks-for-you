@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -21,25 +20,9 @@ const occupations = [
   "technician", "writer"
 ];
 
-const sampleMovies = [
-  { title: "Toy Story", year: 1995, genres: ["Animation", "Children's", "Comedy"] },
-  { title: "Jurassic Park", year: 1993, genres: ["Action", "Adventure", "Sci-Fi"] },
-  { title: "Forrest Gump", year: 1994, genres: ["Comedy", "Drama", "Romance"] },
-  { title: "The Lion King", year: 1994, genres: ["Animation", "Children's", "Musical"] },
-  { title: "Pulp Fiction", year: 1994, genres: ["Crime", "Drama"] },
-  { title: "The Shawshank Redemption", year: 1994, genres: ["Drama"] },
-  { title: "Speed", year: 1994, genres: ["Action", "Thriller"] },
-  { title: "Star Wars", year: 1977, genres: ["Adventure", "Fantasy", "Sci-Fi"] },
-  { title: "Terminator 2: Judgment Day", year: 1991, genres: ["Action", "Sci-Fi", "Thriller"] },
-  { title: "Titanic", year: 1997, genres: ["Drama", "Romance"] }
-];
-
-const sampleGenres = [
-  { name: "Action", count: 1545 }, { name: "Comedy", count: 1200 }, { name: "Drama", count: 1603 },
-  { name: "Thriller", count: 492 }, { name: "Romance", count: 471 }, { name: "Sci-Fi", count: 276 },
-  { name: "Adventure", count: 283 }, { name: "Crime", count: 211 }, { name: "Horror", count: 343 },
-  { name: "Animation", count: 105 }
-];
+// Remove sample data as it will come from the backend
+// const sampleMovies = [...]
+// const sampleGenres = [...]
 
 const Index = () => {
   const [formData, setFormData] = useState({
@@ -52,7 +35,7 @@ const Index = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     if (!formData.age || !formData.gender || !formData.occupation) {
       toast({
         title: "Missing Information",
@@ -63,19 +46,49 @@ const Index = () => {
     }
 
     setIsLoading(true);
-    
-    // Simulate API call - in real implementation, this would call your backend
-    setTimeout(() => {
-      setRecommendations({
-        movies: sampleMovies,
-        genres: sampleGenres
+    setRecommendations(null); // Clear previous recommendations
+
+    try {
+      const response = await fetch('api/recommend', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(formData)
       });
-      setIsLoading(false);
+
+      if (!response.ok) {
+        // Try to parse error response if not OK
+        try {
+            const errorData = await response.json();
+            throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
+        } catch (jsonError) {
+            // If JSON parsing fails, throw a generic error with status
+            throw new Error(`HTTP error! status: ${response.status}. Could not parse error response.`);
+        }
+      }
+
+      const data = await response.json();
+      setRecommendations({
+        movies: data.recommended_movies,
+        genres: data.recommended_genres
+      });
       toast({
         title: "Recommendations Ready!",
         description: "Found your personalized movie recommendations.",
       });
-    }, 2000);
+
+    } catch (error) {
+      console.error('Error fetching recommendations:', error);
+      toast({
+        title: "Error getting recommendations",
+        description: error.message || "Something went wrong. Please try again.",
+        variant: "destructive",
+      });
+      setRecommendations({ movies: [], genres: [] }); // Clear recommendations on error
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -112,8 +125,8 @@ const Index = () => {
             Discover Movies Tailored to You
           </h2>
           <p className="text-lg text-purple-200 max-w-3xl mx-auto mb-6">
-            Our recommendation system uses the MovieLens 100K dataset to analyze user preferences 
-            and suggest movies you'll love. By finding users with similar demographics and tastes, 
+            Our recommendation system uses the MovieLens 100K dataset to analyze user preferences
+            and suggest movies you'll love. By finding users with similar demographics and tastes,
             we curate personalized recommendations just for you.
           </p>
           <div className="flex justify-center items-center space-x-6 text-purple-300">
@@ -190,8 +203,8 @@ const Index = () => {
                   </Select>
                 </div>
 
-                <Button 
-                  type="submit" 
+                <Button
+                  type="submit"
                   className="w-full bg-purple-600 hover:bg-purple-700 text-white"
                   disabled={isLoading}
                 >
@@ -219,12 +232,12 @@ const Index = () => {
         </div>
 
         {/* Recommendations Results */}
-        {recommendations && (
+        {recommendations && recommendations.movies.length > 0 && (
           <section className="mb-12">
             <h3 className="text-3xl font-bold text-white mb-8 text-center">
               Your Personalized Recommendations
             </h3>
-            
+
             <Tabs defaultValue="movies" className="w-full">
               <TabsList className="grid w-full grid-cols-2 bg-black/40 border-purple-800/30">
                 <TabsTrigger value="movies" className="data-[state=active]:bg-purple-600 text-white">
@@ -234,25 +247,38 @@ const Index = () => {
                   Top 10 Genres
                 </TabsTrigger>
               </TabsList>
-              
+
               <TabsContent value="movies" className="mt-6">
                 <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
                   {recommendations.movies.map((movie, index) => (
-                    <MovieCard key={index} movie={movie} rank={index + 1} />
+                    // Assuming movie is just the title string from your backend
+                    <MovieCard key={index} movie={{ title: movie, year: null, genres: [] }} rank={index + 1} />
                   ))}
                 </div>
               </TabsContent>
-              
+
               <TabsContent value="genres" className="mt-6">
                 <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
+                  {/* Pass the genre object directly */}
                   {recommendations.genres.map((genre, index) => (
-                    <GenreCard key={index} genre={genre} rank={index + 1} />
+                     <GenreCard key={index} genre={genre} rank={index + 1} />
                   ))}
                 </div>
               </TabsContent>
             </Tabs>
           </section>
         )}
+         {/* No Recommendations Found */}
+        {recommendations && recommendations.movies.length === 0 && !isLoading && (
+           <section className="mb-12 text-center text-white">
+             <h3 className="text-3xl font-bold mb-4">No Recommendations Found</h3>
+             <p className="text-lg text-purple-200">
+               We couldn't find similar users to provide personalized recommendations based on your criteria.
+               Please try adjusting your details or explore the dataset sample below.
+             </p>
+           </section>
+         )}
+
 
         {/* Technical Details */}
         <section>
@@ -271,7 +297,7 @@ const Index = () => {
                   </AccordionTrigger>
                   <AccordionContent className="text-purple-200">
                     <p className="mb-4">
-                      Our system uses collaborative filtering to find users with similar demographics 
+                      Our system uses collaborative filtering to find users with similar demographics
                       (age, gender, occupation) and movie preferences. Here's how it works:
                     </p>
                     <ol className="list-decimal list-inside space-y-2">
@@ -283,7 +309,7 @@ const Index = () => {
                     </ol>
                   </AccordionContent>
                 </AccordionItem>
-                
+
                 <AccordionItem value="integration" className="border-purple-800/30">
                   <AccordionTrigger className="text-white hover:text-purple-300">
                     Backend Integration

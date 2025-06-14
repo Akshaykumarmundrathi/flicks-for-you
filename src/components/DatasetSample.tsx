@@ -7,7 +7,7 @@ import { Code2, Database, BarChart3 } from "lucide-react";
 export const DatasetSample: React.FC = () => {
   const sampleUsers = [
     { id: 1, age: 24, gender: 'M', occupation: 'technician', zipcode: '85711' },
-    { id: 2, age: 53, gender: 'F', occupation: 'other', zipcode: '94043' },
+    { id: 2, age: 34, gender: 'F', occupation: 'engineer', zipcode: '94043' },
     { id: 3, age: 23, gender: 'M', occupation: 'writer', zipcode: '32067' },
   ];
 

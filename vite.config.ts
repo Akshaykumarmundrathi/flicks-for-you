@@ -8,6 +8,13 @@ export default defineConfig(({ mode }) => ({
   server: {
     host: "::",
     port: 8080,
+    proxy: { // Add this proxy configuration block
+      '/api': {
+        target: 'http://127.0.0.1:5000', // Your Flask backend address
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api/, ''), // Remove /api prefix when forwarding
+      },
+    },
   },
   plugins: [
     react(),
